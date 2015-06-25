@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include <list>
 #include <algorithm>
 
 template<class T, class Term>
@@ -26,11 +26,13 @@ typename T::iterator findLastLoop(T bfCommands) {
     return it;
 }
 
-void parseKeywords(std::vector<int> registers, std::string commands) {
-    std::vector<int>::iterator it = std::begin(registers);
-    const std::string::iterator end = std::end(commands);
+void parseKeywords(std::string commands) {
+    std::list<int> registers = {0};
+    std::list<int>::iterator it = std::begin(registers);
 
-    std::string::iterator loop;
+    const std::string::const_iterator end = std::end(commands);
+
+    std::list<std::string::iterator> loop = {};
 
     for(std::string::iterator i = std::begin(commands); i <= end; ++i ) {
         switch(*i) {
@@ -49,19 +51,26 @@ void parseKeywords(std::vector<int> registers, std::string commands) {
                 std::getchar();
                 break;
             case '>':
-                //registers.push_back(0);
-                it++;
+                registers.push_back(0);
+                ++it;
                 break;
             case '<':
                 it--;
                 break;
             case '[':
-                loop = i;
+                loop.push_back(i);
                 break;
-            case ']':
-                if(*it != 0)
-                    i = loop;
+            case ']': {
+                if(*it != 0 && loop.size() != 0) {
+                    i = loop.back();
+                } else if(*it == 0 && loop.size() > 1) {
+                    loop.pop_back();
+                    std::cout << ": " << *i << std::endl;
+                } else {
+                    break;
+                }
                 break;
+            }
             default:
                 std::cout << "Invalid keyword" << std::endl;
                 break;
@@ -72,10 +81,12 @@ void parseKeywords(std::vector<int> registers, std::string commands) {
 
 
 int main() {
-    std::vector<int> registers = {0,0,0,0};
     std::string bfCommands = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
+    std::string bfCommands2 = "++++++++[>+>++>+++>++++>+++++>++++++>+++++++>++++++++>+++++++++>++++++++++>+++++++++++>++++++++++++>+++++++++++++>++++++++++++++>+++++++++++++++>++++++++++++++++<<<<<<<<<<<<<<<<-]>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<>>>>>>>>>>>>>---.+++<<<<<<<<<<<<<>>>>>>>>>>>>>>+++.---<<<<<<<<<<<<<<>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<.";
 
-    parseKeywords(registers, bfCommands);
+    parseKeywords(bfCommands);
+    std::cout << std::endl;
+    parseKeywords(bfCommands2);
 
     return 0;
 }
