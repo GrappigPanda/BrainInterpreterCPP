@@ -2,39 +2,23 @@
 #include <list>
 #include <algorithm>
 
-template<class T, class Term>
-std::vector<int> findAll(T container, const Term& term) {
-    const typename T::iterator begin = std::begin(container);
-    const typename T::iterator last = std::end(container);
-    typename T::iterator first = std::begin(container);
+class BrainFuck {
+public:
+    void parseKeywords();
 
-    std::vector<int> indexes;
-
-    while(first != last) {
-        if(*first == term)
-            indexes.push_back(first - begin);
-        ++first;
-    }
-    return indexes;
-}
-
-template<class T>
-typename T::iterator findLastLoop(T bfCommands) {
-    typename T::iterator it = bfCommands.begin();
-
-    std::cout << bfCommands.find("[") << std::endl;
-    return it;
-}
-
-void parseKeywords(std::string commands) {
-    std::list<int> registers = {0};
-    std::list<int>::iterator it = std::begin(registers);
-
-    const std::string::const_iterator end = std::end(commands);
-
+private:
+    std::string bfCommands;
+    std::list<int> registers;
+    std::list<int>::iterator it;
     std::list<std::string::iterator> loop = {};
+};
 
-    for(std::string::iterator i = std::begin(commands); i <= end; ++i ) {
+
+void BrainFuck::parseKeywords() {
+
+    const std::string::const_iterator end = std::end(bfCommands);
+
+    for(std::string::iterator i = std::begin(bfCommands); i <= end; ++i ) {
         switch(*i) {
             case '+':
                 (*it)++;
