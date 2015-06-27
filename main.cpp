@@ -5,26 +5,34 @@
 class BrainFuck {
 public:
     void parseKeywords();
+    BrainFuck(std::string);
 
 private:
-    std::string bfCommands;
+    std::string bfKeywords;
     std::list<int> registers;
     std::list<int>::iterator it;
-    std::list<std::string::iterator> loop = {};
+    std::list<std::string::iterator> loop;
+    std::string::const_iterator end;
 };
+
+BrainFuck::BrainFuck(std::string bfCommands) {
+    bfKeywords  = bfCommands;
+    loop        = {};
+    registers   = {0};
+    it          = std::begin(registers);
+    end         = std::end(bfKeywords);
+}
 
 
 void BrainFuck::parseKeywords() {
-
-    const std::string::const_iterator end = std::end(bfCommands);
-
-    for(std::string::iterator i = std::begin(bfCommands); i <= end; ++i ) {
+    for(std::string::iterator i = std::begin(bfKeywords); i <= end; ++i ) {
         switch(*i) {
             case '+':
                 (*it)++;
                 break;
             case '-':
-                (*it)--;
+                if(*it != 0)
+                    (*it)--;
                 break;
             case '.':
                 if(std::next(i) == end)
@@ -65,12 +73,12 @@ void BrainFuck::parseKeywords() {
 
 
 int main() {
-    std::string bfCommands = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
-    std::string bfCommands2 = "++++++++[>+>++>+++>++++>+++++>++++++>+++++++>++++++++>+++++++++>++++++++++>+++++++++++>++++++++++++>+++++++++++++>++++++++++++++>+++++++++++++++>++++++++++++++++<<<<<<<<<<<<<<<<-]>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<>>>>>>>>>>>>>---.+++<<<<<<<<<<<<<>>>>>>>>>>>>>>+++.---<<<<<<<<<<<<<<>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<.";
+    BrainFuck bf1("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
+    BrainFuck bf2("++++++++[>+>++>+++>++++>+++++>++++++>+++++++>++++++++>+++++++++>++++++++++>+++++++++++>++++++++++++>+++++++++++++>++++++++++++++>+++++++++++++++>++++++++++++++++<<<<<<<<<<<<<<<<-]>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<>>>>>>>>>>>>>---.+++<<<<<<<<<<<<<>>>>>>>>>>>>>>+++.---<<<<<<<<<<<<<<>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<.");
 
-    parseKeywords(bfCommands);
+    bf1.parseKeywords();
     std::cout << std::endl;
-    parseKeywords(bfCommands2);
+    bf2.parseKeywords();
 
     return 0;
 }
