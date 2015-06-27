@@ -2,45 +2,36 @@
 #include <list>
 #include <algorithm>
 
-template<class T, class Term>
-std::vector<int> findAll(T container, const Term& term) {
-    const typename T::iterator begin = std::begin(container);
-    const typename T::iterator last = std::end(container);
-    typename T::iterator first = std::begin(container);
+class BrainFsck {
+public:
+    void parseKeywords();
+    BrainFsck(std::string);
 
-    std::vector<int> indexes;
+private:
+    std::string bfKeywords;
+    std::list<int> registers;
+    std::list<int>::iterator it;
+    std::string::const_iterator end;
+    std::list<std::string::iterator> loop;
+};
 
-    while(first != last) {
-        if(*first == term)
-            indexes.push_back(first - begin);
-        ++first;
-    }
-    return indexes;
+BrainFsck::BrainFsck(std::string bfCommands) {
+    bfKeywords  = bfCommands;
+    loop        = {};
+    registers   = {0};
+    it          = std::begin(registers);
+    end         = std::end(bfKeywords);
 }
 
-template<class T>
-typename T::iterator findLastLoop(T bfCommands) {
-    typename T::iterator it = bfCommands.begin();
-
-    std::cout << bfCommands.find("[") << std::endl;
-    return it;
-}
-
-void parseKeywords(std::string commands) {
-    std::list<int> registers = {0};
-    std::list<int>::iterator it = std::begin(registers);
-
-    const std::string::const_iterator end = std::end(commands);
-
-    std::list<std::string::iterator> loop = {};
-
-    for(std::string::iterator i = std::begin(commands); i <= end; ++i ) {
+void BrainFsck::parseKeywords() {
+    for(std::string::iterator i = std::begin(bfKeywords); i <= end; ++i ) {
         switch(*i) {
             case '+':
-                (*it)++;
+                ++(*it);
                 break;
             case '-':
-                (*it)--;
+                if(*it != 0)
+                    --(*it);
                 break;
             case '.':
                 if(std::next(i) == end)
@@ -55,7 +46,9 @@ void parseKeywords(std::string commands) {
                 ++it;
                 break;
             case '<':
-                it--;
+                if(std::begin(registers) == it)
+                    registers.push_front(0);
+                --it;
                 break;
             case '[':
                 loop.push_back(i);
@@ -63,11 +56,10 @@ void parseKeywords(std::string commands) {
             case ']': {
                 if(*it != 0 && loop.size() != 0) {
                     i = loop.back();
-                } else if(*it == 0 && loop.size() > 1) {
+                } else if(*it == 0 && loop.size() > 0) {
                     loop.pop_back();
-                    std::cout << ": " << *i << std::endl;
                 } else {
-                    break;
+                    std::cout << "Why am I even here?" << std::endl;
                 }
                 break;
             }
@@ -81,12 +73,13 @@ void parseKeywords(std::string commands) {
 
 
 int main() {
-    std::string bfCommands = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
-    std::string bfCommands2 = "++++++++[>+>++>+++>++++>+++++>++++++>+++++++>++++++++>+++++++++>++++++++++>+++++++++++>++++++++++++>+++++++++++++>++++++++++++++>+++++++++++++++>++++++++++++++++<<<<<<<<<<<<<<<<-]>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<>>>>>>>>>>>>>---.+++<<<<<<<<<<<<<>>>>>>>>>>>>>>+++.---<<<<<<<<<<<<<<>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<.";
+    BrainFsck bf1("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
+    BrainFsck bf2(">++++++++[<+++++++++>-]<.>>+>+>++>[-]+<[>[->+<<++++>]<<]>.+++++++..+++.>>+++++++.<<<[[-]<[-]>]<+++++++++++++++.>>.+++.------.--------.>>+.>++++.");
+    // I just can't get bf2 to work properly. The "W" in world is improperly formatted and I have no clue why.
 
-    parseKeywords(bfCommands);
+    bf1.parseKeywords();
     std::cout << std::endl;
-    parseKeywords(bfCommands2);
+    bf2.parseKeywords();
 
     return 0;
 }
