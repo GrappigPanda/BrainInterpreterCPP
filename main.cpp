@@ -2,20 +2,20 @@
 #include <list>
 #include <algorithm>
 
-class BrainFuck {
+class BrainFsck {
 public:
     void parseKeywords();
-    BrainFuck(std::string);
+    BrainFsck(std::string);
 
 private:
     std::string bfKeywords;
     std::list<int> registers;
     std::list<int>::iterator it;
-    std::list<std::string::iterator> loop;
     std::string::const_iterator end;
+    std::list<std::string::iterator> loop;
 };
 
-BrainFuck::BrainFuck(std::string bfCommands) {
+BrainFsck::BrainFsck(std::string bfCommands) {
     bfKeywords  = bfCommands;
     loop        = {};
     registers   = {0};
@@ -23,16 +23,15 @@ BrainFuck::BrainFuck(std::string bfCommands) {
     end         = std::end(bfKeywords);
 }
 
-
-void BrainFuck::parseKeywords() {
+void BrainFsck::parseKeywords() {
     for(std::string::iterator i = std::begin(bfKeywords); i <= end; ++i ) {
         switch(*i) {
             case '+':
-                (*it)++;
+                ++(*it);
                 break;
             case '-':
                 if(*it != 0)
-                    (*it)--;
+                    --(*it);
                 break;
             case '.':
                 if(std::next(i) == end)
@@ -47,7 +46,9 @@ void BrainFuck::parseKeywords() {
                 ++it;
                 break;
             case '<':
-                it--;
+                if(std::begin(registers) == it)
+                    registers.push_front(0);
+                --it;
                 break;
             case '[':
                 loop.push_back(i);
@@ -55,11 +56,10 @@ void BrainFuck::parseKeywords() {
             case ']': {
                 if(*it != 0 && loop.size() != 0) {
                     i = loop.back();
-                } else if(*it == 0 && loop.size() > 1) {
+                } else if(*it == 0 && loop.size() > 0) {
                     loop.pop_back();
-                    std::cout << ": " << *i << std::endl;
                 } else {
-                    break;
+                    std::cout << "Why am I even here?" << std::endl;
                 }
                 break;
             }
@@ -73,8 +73,9 @@ void BrainFuck::parseKeywords() {
 
 
 int main() {
-    BrainFuck bf1("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
-    BrainFuck bf2("++++++++[>+>++>+++>++++>+++++>++++++>+++++++>++++++++>+++++++++>++++++++++>+++++++++++>++++++++++++>+++++++++++++>++++++++++++++>+++++++++++++++>++++++++++++++++<<<<<<<<<<<<<<<<-]>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<>>>>>>>>>>>>>---.+++<<<<<<<<<<<<<>>>>>>>>>>>>>>+++.---<<<<<<<<<<<<<<>>>>>>>>>>>>>>>----.++++<<<<<<<<<<<<<<<.");
+    BrainFsck bf1("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
+    BrainFsck bf2(">++++++++[<+++++++++>-]<.>>+>+>++>[-]+<[>[->+<<++++>]<<]>.+++++++..+++.>>+++++++.<<<[[-]<[-]>]<+++++++++++++++.>>.+++.------.--------.>>+.>++++.");
+    // I just can't get bf2 to work properly. The "W" in world is improperly formatted and I have no clue why.
 
     bf1.parseKeywords();
     std::cout << std::endl;
