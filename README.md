@@ -12,6 +12,9 @@ to see if I can teach a computer to produce semi-competent code in an
 esoteric language.
 
 CONTACT:
+
 http://www.twitter.com/grappigpanda
+
 http://www.ianleeclark.com
+
 ian@ianleeclark.com
